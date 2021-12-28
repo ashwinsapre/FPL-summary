@@ -5,15 +5,21 @@ import urllib, json
 import urllib.request
 import pandas as pd
 import dataframe_image as dfi
+import unidecode
 import logging
 logging.basicConfig(filename='app.log', filemode='w',level=logging.INFO)
 
 '''
-helper function - removes non-alphanumeric characters from player names
+helper function - removes non-alphanumeric characters from player names, converts accented characters to normal
+and truncates long names
 '''
 
 def purify(x):
-    return ''.join(ch for ch in x if ch.isalnum() or ch ==' ')
+    x = unidecode.unidecode(x)
+    x = ''.join(ch for ch in x if ch.isalnum() or ch ==' ')
+    if len(x)>25:
+        x = x[:25]+'...'
+    return x
 
 '''
 WORK IN PROGRESS: function to calculate total number of unique players used by a player
