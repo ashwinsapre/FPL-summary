@@ -160,7 +160,7 @@ def get_table(league_code, gw_start, gw_end):
             buffer=0
         else:
             buffer+=1
-        tv=str(data.get('current')[-1]['value']/10)[:5]
+        tv=data.get('current')[-1]['value']
         cur_rank=data.get('current')[-1].get('overall_rank')
         
         d = pd.DataFrame({'name':teams[team_id], 'points':total, 'rank':cur_rank,'best_overall_rank':min_rank,
@@ -185,9 +185,9 @@ def get_summary_image(league_id, max_rows):
     '''
     these columns will be converted to ints
     '''
-    int_cols=['rank','best_overall_rank', 'worst_overall_rank',
+    int_cols=['points','rank','best_overall_rank', 'worst_overall_rank',
        'best_gw_rank', 'worst_gw_rank', 'highest_score', 'lowest_score',
-       'transfers', 'transfers_cost', 'points_on_bench']
+       'transfers', 'transfers_cost', 'points_on_bench', 'team_value']
     for col in int_cols:
         df[col]=df[col].astype(int)
     
@@ -199,8 +199,8 @@ def get_summary_image(league_id, max_rows):
     df = df.drop(labels = ['chips_used'], axis=1)
     
     #applying gradient
-    df = df.style.background_gradient(low = 0.2, high = 0.2, subset=['rank','worst_overall_rank', 'best_overall_rank', 'best_gw_rank', 'worst_gw_rank','transfers', 'transfers_cost', 'points_on_bench'], cmap='RdYlGn_r').background_gradient(subset=['points','highest_score','lowest_score', 'team_value'], cmap='RdYlGn')
+    dfs = df.style.background_gradient(low = 0.2, high = 0.2, subset=['rank','worst_overall_rank', 'best_overall_rank', 'best_gw_rank', 'worst_gw_rank','transfers', 'transfers_cost', 'points_on_bench'], cmap='RdYlGn_r').background_gradient(subset=['points','highest_score','lowest_score', 'team_value'], cmap='RdYlGn')
+
+    dfi.export(dfs, f'{league_id}summary.png', max_rows=max_rows)
     
-    dfi.export(df, f'files/{league_id}summary.png', max_rows=max_rows)
-    
-    return df
+    return dfs, df

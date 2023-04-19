@@ -15,7 +15,7 @@ def index():
         GHS=814181
         RFPL=386899
 
-        df = script.get_summary_image(leagueID,100)
+        _ , _ = script.get_summary_image(leagueID,100)
         return send_file(f'files/{leagueID}summary.png', as_attachment=True)
         #initiate download
     else:
