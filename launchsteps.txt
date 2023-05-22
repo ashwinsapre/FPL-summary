@@ -1,0 +1,37 @@
+Steps to launch:
+
+cloen repo
+install chrome
+sudo apt --fix-broken install
+install all libraries
+install nginx, gunicorn
+sudo nano /etc/systemd/system/fpl.service
+	[Unit]
+	Description=Gunicorn instance for a simple hello world app
+	After=network.target
+	[Service]
+	User=ubuntu
+	Group=www-data
+	WorkingDirectory=/home/ubuntu/FPL-summary
+	ExecStart=/home/ubuntu/FPL-summary/gunicorn -b localhost:5001 app:app
+	Restart=always
+	[Install]
+	WantedBy=multi-user.target
+
+$ sudo systemctl daemon-reload
+$ sudo systemctl start fpl.service
+$ sudo systemctl enable fpl.service
+
+$ sudo systemctl start nginx
+$ sudo systemctl enable nginx
+
+sudo nano /etc/nginx/sites-available/default
+	upstream fplapp {
+    	server 127.0.0.1:5001;
+	}
+	location / {
+	    proxy_pass http://flaskhelloworld;
+	}
+
+inside code directory
+gunicorn -b 0.0.0.0:5001 app:app
