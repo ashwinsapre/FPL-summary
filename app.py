@@ -1,6 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, send_file
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from flask import Flask, render_template, request, send_file
 import script
 
 app = Flask(__name__)
@@ -15,7 +13,7 @@ def index():
         GHS=814181
         RFPL=386899
 
-        _ , _ = script.get_summary_image(leagueID,100)
+        df = script.get_summary_image(leagueID,100)
         return send_file(f'files/{leagueID}summary.png', as_attachment=True)
         #initiate download
     else:

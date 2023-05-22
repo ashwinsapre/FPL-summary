@@ -94,7 +94,7 @@ def get_table(league_code, gw_start, gw_end):
         initializing variables inside team loop since they will be unique for each team
         '''
         total, transfers, transfers_cost, bench_points, tv, max_gw_rank, max_rank, max_score = 0,0,0,0,0,0,0,0
-        min_gw_rank, min_rank=9000000, 9000000
+        min_gw_rank, min_rank=10000000, 10000000
         min_score=1000
         chiplist = []
         
@@ -124,7 +124,8 @@ def get_table(league_code, gw_start, gw_end):
             try:
                 total += data.get('current')[gw_no].get('points') - data.get('current')[gw_no].get('event_transfers_cost')
                 transfers_cost += data.get('current')[gw_no].get('event_transfers_cost')
-                transfers += data.get('current')[gw_no].get('event_transfers')
+                if gw_no != 16:
+                    transfers += data.get('current')[gw_no].get('event_transfers')
                 curr_ovr_rank = data.get('current')[gw_no].get('overall_rank')
                 if not gw_no in skip_gws:
                     if curr_ovr_rank>max_rank:
@@ -176,7 +177,7 @@ def get_table(league_code, gw_start, gw_end):
     return df
 
 def get_summary_image(league_id, max_rows):
-    df=get_table(league_id, 1,31)
+    df=get_table(league_id, 1,36)
     df=df.head(max_rows)
     '''
     set index name to rank to prevent column duplication while reading/writing to CSV
@@ -185,9 +186,9 @@ def get_summary_image(league_id, max_rows):
     '''
     these columns will be converted to ints
     '''
-    int_cols=['points','rank','best_overall_rank', 'worst_overall_rank',
+    int_cols=['rank','best_overall_rank', 'worst_overall_rank',
        'best_gw_rank', 'worst_gw_rank', 'highest_score', 'lowest_score',
-       'transfers', 'transfers_cost', 'points_on_bench', 'team_value']
+       'transfers', 'transfers_cost', 'points_on_bench']
     for col in int_cols:
         df[col]=df[col].astype(int)
     
@@ -199,8 +200,8 @@ def get_summary_image(league_id, max_rows):
     df = df.drop(labels = ['chips_used'], axis=1)
     
     #applying gradient
-    dfs = df.style.background_gradient(low = 0.2, high = 0.2, subset=['rank','worst_overall_rank', 'best_overall_rank', 'best_gw_rank', 'worst_gw_rank','transfers', 'transfers_cost', 'points_on_bench'], cmap='RdYlGn_r').background_gradient(subset=['points','highest_score','lowest_score', 'team_value'], cmap='RdYlGn')
-
-    dfi.export(dfs, f'{league_id}summary.png', max_rows=max_rows)
+    df = df.style.background_gradient(low = 0.2, high = 0.2, subset=['rank','worst_overall_rank', 'best_overall_rank', 'best_gw_rank', 'worst_gw_rank','transfers', 'transfers_cost', 'points_on_bench'], cmap='RdYlGn_r').background_gradient(subset=['points','highest_score','lowest_score', 'team_value'], cmap='RdYlGn')
     
-    return dfs, df
+    dfi.export(df, f'files/{league_id}summary.png', max_rows=max_rows)
+    
+    return df
