@@ -161,7 +161,7 @@ def get_table(league_code, gw_start, gw_end):
             buffer=0
         else:
             buffer+=1
-        tv=data.get('current')[-1]['value']
+        tv=str(data.get('current')[-1]['value']/10)[:5]
         cur_rank=data.get('current')[-1].get('overall_rank')
         
         d = pd.DataFrame({'name':teams[team_id], 'points':total, 'rank':cur_rank,'best_overall_rank':min_rank,
@@ -177,7 +177,7 @@ def get_table(league_code, gw_start, gw_end):
     return df
 
 def get_summary_image(league_id, max_rows):
-    df=get_table(league_id, 1,36)
+    df=get_table(league_id, 1,38)
     df=df.head(max_rows)
     '''
     set index name to rank to prevent column duplication while reading/writing to CSV
@@ -200,7 +200,7 @@ def get_summary_image(league_id, max_rows):
     df = df.drop(labels = ['chips_used'], axis=1)
     
     #applying gradient
-    df = df.style.background_gradient(low = 0.2, high = 0.2, subset=['rank','worst_overall_rank', 'best_overall_rank', 'best_gw_rank', 'worst_gw_rank','transfers', 'transfers_cost', 'points_on_bench'], cmap='RdYlGn_r').background_gradient(subset=['points','highest_score','lowest_score', 'team_value'], cmap='RdYlGn')
+    df = df.style.background_gradient(low = 0.4, high = 0.4, subset=['rank','worst_overall_rank', 'best_overall_rank', 'best_gw_rank', 'worst_gw_rank','transfers', 'transfers_cost', 'points_on_bench'], cmap='RdYlGn_r').background_gradient(subset=['points','highest_score','lowest_score', 'team_value'], cmap='RdYlGn')
     
     dfi.export(df, f'files/{league_id}summary.png', max_rows=max_rows)
     
